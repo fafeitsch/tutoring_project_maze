@@ -1,4 +1,4 @@
-package de.fafeitsch.maze;
+package de.fafeitsch.maze.domain;
 
 public class CellList {
 
