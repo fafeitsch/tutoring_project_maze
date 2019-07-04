@@ -2,33 +2,50 @@ package de.fafeitsch.maze.domain;
 
 public class Cell {
 
-    private int x;
-    private int y;
+    private final int row;
+    private final int col;
     private CellList neighbours;
+    private Cell predecessor;
 
-    public Cell(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public Cell(int row, int col) {
+        this.row = row;
+        this.col = col;
         this.neighbours = new CellList();
     }
 
-    public void addNeighbour(Cell neighbour){
+    public void addNeighbour(Cell neighbour) {
         this.neighbours.addToFront(neighbour);
     }
 
-    public int getX() {
-        return x;
+    public int getRow() {
+        return this.row;
     }
 
-    public int getY() {
-        return y;
+    public int getCol() {
+        return this.col;
+    }
+
+    public Cell getPredecessor() {
+        return this.predecessor;
+    }
+
+    public void setPredecessor(Cell predecessor) {
+        this.predecessor = predecessor;
+    }
+
+    public boolean wasVisited() {
+        return this.predecessor != null;
+    }
+
+    public Cell[] getNeighboursAsArray() {
+        return this.neighbours.toArray();
     }
 
     @Override
     public String toString() {
         return "Cell{" +
-                "x=" + x +
-                ", y=" + y +
+                "row=" + this.row +
+                ", col=" + this.col +
                 '}';
     }
 }
