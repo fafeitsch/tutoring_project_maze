@@ -8,7 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-public class Main {
+public class Solver {
     public static void main(String args[]) throws FileNotFoundException {
         if (args.length != 5) {
             System.out.println("Please give at least 5 arguments: [PATH_TO_FILE] [START_ROW] [START_COL] [END_ROW] [END_COL]");
