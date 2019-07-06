@@ -16,13 +16,13 @@ public class MazeBuilder {
             }
         }
 
-        setNeighbours(maze, cells);
+        setNeighbours(cells);
         return cells[startRow][startCol];
     }
 
-    private static void setNeighbours(char[][] maze, Cell[][] cells) {
-        for (int row = 0; row < maze.length; row++) {
-            for (int col = 0; col < maze[row].length; col++) {
+    private static void setNeighbours(Cell[][] cells) {
+        for (int row = 0; row < cells.length; row++) {
+            for (int col = 0; col < cells[row].length; col++) {
                 Cell cell = cells[row][col];
                 if (cell != null) {
                     if (row >= 1 && cells[row - 1][col] != null) {
@@ -31,10 +31,10 @@ public class MazeBuilder {
                     if (col >= 1 && cells[row][col - 1] != null) {
                         cell.addNeighbour(cells[row][col - 1]);
                     }
-                    if (row < maze.length - 1 && cells[row + 1][col] != null) {
+                    if (row < cells.length - 1 && cells[row + 1][col] != null) {
                         cell.addNeighbour(cells[row + 1][col]);
                     }
-                    if (col < maze[row].length - 1 && cells[row][col + 1] != null) {
+                    if (col < cells[row].length - 1 && cells[row][col + 1] != null) {
                         cell.addNeighbour(cells[row][col + 1]);
                     }
                 }

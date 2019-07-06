@@ -1,13 +1,12 @@
 \documentclass{exam}
 \usepackage[utf8x]{inputenc}
 \usepackage[ngerman]{babel}
-\usepackage[german,ruled,vlined,linesnumbered,commentsnumbered,algoruled]{algorithm2e}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{marvosym}
-\usepackage{tikz}
+\usepackage{xcolor}
 \usepackage[pdftex,
             pdfauthor={Fabian Feitsch},
             pdfsubject={Irrgarten-Aufgabe},
@@ -17,15 +16,22 @@
 \usepackage{censor}
 \usepackage{listings}
 \usepackage{parskip}
-\SetKw{To}{to}
-\SetKw{KwInt}{int}
-\SetKw{KwTrue}{true}
-\SetKw{KwFalse}{false}
-\SetKw{KwOr}{or}
 
-\DontPrintSemicolon
-\newcommand{\A}{\sffamily{A}\normalfont}
-\newcommand{\ident}[1]{{\normalfont\sffamily{#1}}}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color
+  basicstyle=\ttfamily,
+  breaklines=true,                 % automatic line breaking only at whitespace
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  keywordstyle=\color{blue},       % keyword style
+  stringstyle=\color{mymauve},     % string literal style
+}
+
 \renewcommand\familydefault{\sfdefault}
 
 \pagestyle{headandfoot}
@@ -101,18 +107,162 @@ In der ersten Zeile steht stets eine Zahl, die angibt, wie viele Zeilen noch kom
 
 Schreiben Sie eine Klasse \verb|PrettyPrinter| im Paket \verb|de.yourname.maze|. Die Klasse soll ein privates, finales Attribut vom Typ \verb|char[][]| besitzen, sowie einen Konstruktor mit einem Parameter, der das private Attribut setzt. Weiterhin soll die Klasse eine Methode \verb|printPretty| besitzen, die einen \verb|PrintStream| entgegen nimmt und das einzige Klassenattribut vom Typ \verb|char[][]| so ausgibt wie die Eingabe aus Aufgabe~\ref{exec:importer} aussah, aber ohne die Zahl in der ersten Zeile.
 
-\paragraph{Tipp:} Mittels \verb|new String(char[])| können Sie ein \verb|char[]| in einen String umwandeln. Sie benötigen den Tipp nicht unbedingt, aber er macht den Code kürzer.
+\textbf{Tipp:} Mittels \verb|new String(char[])| können Sie ein \verb|char[]| in einen String umwandeln. Sie benötigen den Tipp nicht unbedingt, aber er macht den Code kürzer.
 
-\titledquestion{Die Domain-Klassen}
-Im folgenden werden die Klassen definiert, die den Irrgarten später darstellen sollen. Es handelt sich um die drei Klassen \verb|Cell|, \verb|CellList| und \verb|CellListItem|. Legen Sie alle drei Klassen im Paket \verb|de.yourname.maze.domain| an.
+\titledquestion{Die Domain-Klassen}\label{exec:domain}
+Im folgenden werden die Klassen definiert, die später den Irrgarten darstellen sollen. Es handelt sich um die drei Klassen \verb|Cell|, \verb|CellList| und \verb|CellListItem|. Legen Sie alle drei Klassen im Paket \verb|de.yourname.maze.domain| an. Diese Klassen werden in den weiteren Aufgaben um zusätzliche Methoden ergänzt.
+
 \begin{parts}
   \part
   Wir definieren den Begriff \emph{Zelle} als ein freies Feld in unserem Irrgarten. Eine Zelle besitzt vier Eigenschaften: \verb|row|, \verb|col|, \verb|neighbours| und \verb|predecessor|. Die ersten beiden Attribute beschreiben den Ort, an dem sich die Zelle im Irrgarten befindet. Welchen Datentyp schlagen Sie vor, um \verb|row| und \verb|col| zu verwalten?
   \part
-  Erstellen Sie eine Klasse \verb|Cell| mit den Attributen \verb|row| und \verb|col| sowie einen Konstruktor, mit dem beide Werte gesetzt werden können. Schreiben Sie außerdem Getter für beide Attribute. Legen Sie eine \verb|toString()|-Methode an, die beide Werte schön formatiert ausgibt.
+  Erstellen Sie eine Klasse \verb|Cell| mit den Attributen \verb|row| und \verb|col| sowie einen Konstruktor, mit dem beide Werte gesetzt werden können. Schreiben Sie außerdem Getter für beide Attribute. Legen Sie eine \verb|toString()|-Methode an, die den Namen der Klasse sowie beide Werte schön formatiert ausgibt.
+  \part 
+  Die Nachbarn einer Zelle $z$ seien freie Zellen, die direkt neben $z$ liegen. Eine Zelle kann somit maximal vier Nachbarn haben (oder weniger). Wir programmieren nun einen Datentyp \verb|CellList|, der eine List von Zellen darstellt. Legen Sie hierfür zunächst eine Klasse \verb|CellListItem| an, die ein Attribut \verb|content| vom Typ \verb|Cell| und ein Attribut \verb|next| vom Typ \verb|CellListItem| besitzt. Schreiben Sie einen Konstruktor, der das \verb|content|-Attribut setzt, sowie Getter/Setter für beide Attribute.
+  \part 
+  Schreiben Sie eine Klasse \verb|CellList| die genau ein Feld \verb|first| vom Typ \verb|CellListItem| besitzt. Legen Sie keinen Konstruktor an.  
   \part
-  Das Attribut \verb|neighbours| sei vom Typ \verb|CellList| und das Attribut \verb|predecessor| sei vom Typ \verb|Cell|.
+  Erweitern Sie nun die Klasse \verb|Cell| um das Attribut \verb|neighbours| vom Typ \verb|CellList| und das Attribut \verb|predecessor| vom Typ \verb|Cell|.
 \end{parts}
+
+\titledquestion{Implementieren der Listen-Funktionalität}
+
+Bis jetzt hat die Klasse \verb|CellList| außer einem Attribut keine weitere Funktion. In dieser Aufgabe wird die eigentliche Liste implementiert. Es handelt sich um eine \emph{einfach verkettete} Liste, das heißt, jedes \verb|CellListItem| zeigt auf seinen Nachfolger. Falls dieser nicht existiert, so ist der Nachfolger \verb|null|. Analog hat das Attribut \verb|first| der Klasse \verb|CellList| den Wert \verb|null| wenn die List leer ist. Die folgenden Methoden sollen in der Kasse \verb|CellList| implementiert werden.
+
+\begin{parts}
+	\part Implementieren Sie die Methode \verb|addToFront(Cell cell)|. Diese Methode nimmt ein Argument vom Typ \verb|Cell| entgegen und fügt ein neues \verb|CellListItem| mit \verb|cell| als Inhalt vorne in die Liste ein.
+	\part Implementieren Sie die Methode \verb|poll()|, welche das erste Element der Liste entfernt und dessen \verb|Cell|-Inhalt zurück gibt. Falls die List leer ist, so soll \verb|null| zurückgegeben werden.
+	\part Implementieren Sie die Methode \verb|enqueue(Cell cell)|, welche die übergebene Zelle \emph{hinten} an die List anhängt (vergleiche Aufgabe a)).
+	\part Implementieren Sie die Methode \verb|isEmpty()|, die \verb|true| zurückgibt, wenn die Liste leer ist, ansonsten \verb|false|.
+	\part Implementieren Sie die Methode \verb|getSize()|. Sie soll die aktuelle Größe der Liste zurückgeben.
+	\part Implementieren Sie die Methode \verb|toArray()|. Sie soll ein Array vom Typ \verb|Cell[]| zurückgeben, welches alle in der Liste enthaltenen Zellen enthält. Der Inhalt der Liste soll sich nicht ändern. \textbf{Tipp:} Verwenden Sie hierfür die Methode \verb|getSize()|.	
+\end{parts}
+
+\titledquestion{Erweiterung der Zelle}
+
+In Aufgabe~\ref{exec:domain} wurde bereits die Methode \verb|Cell| angelegt, die unter anderem ein Attribut \verb|CellList| besitzt, um die Nachbarn der Zelle zu verwalten. Fügen Sie der Klase \verb|Cell| nun weitere Methoden hinzu:
+
+\begin{itemize}
+\item Die Methode \verb|addNeighbour(Cell cell)| soll in der Nachbarsliste vorne die Zelle \verb|cell| einfügen.
+\item Implementieren Sie außerdem die Methode \verb|getNeighboursAsArray()| welche die Nachbarn der Zelle als \verb|Cell[]| zurückgeben soll.
+\item Legen Sie außerdem Getter und Setter für das \verb|predecessor|-Attribut an.
+\item Die Methode \verb|wasVisited()| soll \verb|true| zurückgeben, falls der \verb|successor| ungleich \verb|null| ist, ansonsten \verb|false|.
+\end{itemize}
+
+\titledquestion{Konvertierung des Irrgartens in Zellen}\label{exec:mazebuilder}
+
+Der \verb|Importer| aus Aufgabe~\ref{exec:importer} liest bis jetzt nur ein \verb|char[][]|-Array ein, welches wir jetzt zu einem Irrgarten weiterverarbeiten wollen.
+
+\begin{parts}
+\part Legen Sie eine Klasse \verb|MazeBuilder| im Paket \verb|de.yourname.maze.domain|. Diese Klasse soll keine Attribute und einen privaten (!) Konstruktur ohne Argumente besitzen.
+\part Legen Sie in der Klasse eine private, statische Methode \verb|setNeighbours(Cell[][] cells)| an, die sich wie folgt verhält:
+\begin{enumerate}
+	\item Es wird nacheinander jede \verb|Cell| aus \verb|cells| betrachtet. Nenne die gerade betrachtete Zelle \verb|cell|.
+	\item Falls \verb|cell == null| überspringe \verb|cell| und mache mit der nächsten Zelle weiter.
+	\item Überprüfe, ob die Zelle \verb|c| direkt über \verb|cell != null|, falls ja, dann \verb|cell.addNeighbour(c)|.
+	\item Überprüfe, ob die Zelle \verb|c| direkt unter \verb|cell != null|, falls ja, dann \verb|cell.addNeighbour(c)|.
+	\item Überprüfe, ob die Zelle \verb|c| direkt links neben \verb|cell != null|, falls ja, dann \verb|cell.addNeighbour(c)|.
+	\item Überprüfe, ob die Zelle \verb|c| direkt rechts neben \verb|cell != null|, falls ja, dann \verb|cell.addNeighbour(c)|.
+\end{enumerate}
+\textbf{Hinweis:} Achten Sie auf die Array-Begrenzungen. Wenn Sie bespielsweise eine Zelle in der ersten Zeile betrachten, dann können Sie Schritt 3) nicht ausführen. Analog gilt das auch für die anderen Abfragen. Nutzen Sie geeignete \verb|if|-Abfragen, um diese Fälle abzufangen.
+\part Legen Sie nun eine öffentliche, statische Methode \verb|buildMaze| mit dem Rückgabewert \verb|Cell|. Die Methode hat drei Argumente, nämlich \verb|char[][] maze, int startRow| und \verb|int startCol|. Implementieren Sie die folgenden Schritte:
+\begin{enumerate}
+	\item Erstelle ein Feld \verb|cells| vom Typ \verb|Cell[][]|.
+	\item Sorgen Sie dafür, dass \verb|cells| die gleichen Dimensionen wie \verb|maze| hat. Zum Beispiel soll aus
+	\begin{verbatim}
+		maze = [['a','b','c'],['d','e','f','g'],['h','j']]
+	\end{verbatim}
+	dieses Array vom Typ \verb|Cell[][]| werden:
+	\begin{verbatim}
+		cells = [[null,null,null],[null,null,null,null],[null,null]].
+	\end{verbatim}
+	Die Länge der Zeilen und Spalten ist also identisch zu \verb|maze|, aber alle Einträge sind \verb|null|.
+	\item Setze nun \verb|cell[row][col] = new Cell(row, col)| falls \verb|maze[row][col] == ' '|. Die Werte der beiden Variablen \verb|row| und \verb|col| sollen über eine verschachtelte \verb|for|-Schleife erzeugt werden.
+	\item Rufe \verb|setNeighbours(cells)| auf.
+	\item Gebe \verb|cells[startRow][startCol]| zurück.
+\end{enumerate}
+\end{parts}
+
+\titledquestion{Finden des kürzesten Weges}
+
+Legen Sie eine Klasse \verb|ShortestPathFinder| im Paket \verb|de.yourname.maze.domain| mit einem Attribut \verb|char[][] maze]|, welches über den Konstruktur gesetzt wird.
+
+Um den kürzesten Weg durch den Irrgarten zu finden wird der \emph{Breitensuche}-Algorithmus verwendet. Dieser beginnt mit einer Start-Zelle und erforscht den Irrgarten, bis die Ziel-Zelle gefunden wurde. Während des Algorithmuses wird der kürzeste Weg über die \verb|predecessor|-Attribute der \verb|Cell|-Klasse gespeichert. Am Ende kann, startend von der Ziel-Zelle, der Weg über die \verb|predecessor|-Attribute rekonstruiert werden. Dieser Weg ist dann der kürzeste Weg durch den Irrgarten. Im folgenden finden Sie den Breitensuche-Algorithmus angegeben. Vervollständigen Sie die Lücken und fügen Sie die Methode dann in die Klasse \verb|ShortestPathFinder| ein:
+
+\begin{lstlisting}[language=java]
+private CellList findShortestPath(Cell start, int endRow, int endCol){
+    CellList queue = new CellList();
+    queue.enqueue(_____);
+    Cell current = null;
+    _____ (!queue.isEmpty()) {
+    	current = queue.poll();
+        if (current.getRow() == ______ && current.getCol() == ______) {
+        	break;
+        }
+        ______ neighbours = current.getNeighboursAsArray();
+        for (int i = 0; _____________________; i++) {
+        	Cell neighbour = neighbours[i];
+            if (neighbour.wasVisited() || neighbour == start) {
+            	continue;
+            }
+            neighbour.setPredecessor(current);
+            queue.enqueue(neighbour);
+        }
+    }
+
+    CellList path = new CellList();
+    path.__________(current);
+    while (current.getPredecessor() != null) {
+    	current = current.getPredecessor();
+        path.addToFront(_______);
+    }
+    return ____;
+}
+\end{lstlisting}
+
+\titledquestion{Markieren des kürzesten Weges}
+
+Implementieren Sie nun eine öffentliche Methode \verb|drawShortestPathInMaze| in der Klasse \verb|ShortestPathFinder| mit den Parametern \verb|startRow|, \verb|startCol|, \verb|endRow| und \verb|endCol|. Diese Methode soll zunächst aus dem klasseneigenen Attribute \verb|maze| einen Irrgarten mit Hilfe der Klasse \verb|MazeBuilder| aus Aufgabe~\ref{exec:mazebuilder} bauen und dann den kürzesten Weg in dem gebauten Irrgarten ermitteln. Anschließend soll \verb|maze[row][col] = '*'| gesetzt werden, falls eine Zelle mit entsprechenden Koordinaten im berechneten kürzesten Weg enthalten ist.
+\newpage
+\titledquestion{Die Main-Methode}
+
+Kopieren Sie die folgende Klasse in das Paket \verb|de.yourname.maze.cmd| und vervollständigen Sie die Lücken, sodass das Programm die Eingangs geschlilderte Funktionalität hat.
+
+\begin{lstlisting}[language=java]
+package de.yourname.maze.cmd;
+
+import de.yourname.maze.________;
+import de.yourname.maze._____________;
+import de.yourname.maze.domain.ShortestPathFinder;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class Solver {
+    //Ignore the throws clause, it is needed to read files.
+    public static void main(String args[]) throws FileNotFoundException {
+        if (args.length != _) {
+            System.out.println("Give 5 arguments: [PATH_TO_FILE] [START_ROW] [START_COL] [END_ROW] [END_COL]");
+        }
+        int startX = _______._________________;
+        int startY = _______._________________;
+        int endX = _______._________________;
+        int endY = _______._________args[4]_;
+
+        Scanner scanner = new Scanner(new FileInputStream(args[0]));
+        Importer importer = ___ __________;
+        char[][] maze = ________._______________(scanner);
+        scanner.close();
+
+        ShortestPathFinder finder = new ShortestPathFinder(____);
+        ______.__________________________________________________;
+
+        PrettyPrinter printer = new PrettyPrinter(____);
+        printer.___________(System.out);
+    }
+}
+\end{lstlisting}
 
 \end{questions}
 \end{document}
